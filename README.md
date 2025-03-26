@@ -4,7 +4,7 @@
 
 ## Visual Results On MTSR
 
-![Visual Results](assets/Visual Quality.jpg)
+![Visual Results](assets/Visual_Quality.jpg)
 
 ## Receptive Field
 
@@ -12,7 +12,7 @@
 
 ## Inference Speed
 
-![Inference Speed](assets/Inference Time.jpg)
+![Inference Speed](assets/Inference_Time.jpg)
 
 ## Installation
 
