@@ -9,7 +9,7 @@ manual_seed: 10
 datasets:
   train:
     task: SR
-    name: DF2K
+    name: DIV2K
     type: PairedImageDataset
     dataroot_gt: /root/lanyun-tmp/datasets/DIV2K_train_HR
     dataroot_lq: /root/lanyun-tmp/datasets/DIV2K_train_LR_bicubic/X4

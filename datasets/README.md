@@ -1,0 +1,1 @@
+You can place the training set here, and it can also be placed in other locations.
