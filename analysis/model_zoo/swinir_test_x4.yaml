@@ -1,0 +1,105 @@
+# =====================================
+# general settings
+# 运行示例：
+#    python basicsr/test.py -opt options/test/test_SwinIR_x2.yml
+# =====================================
+name: test_SwinIR_x4             # 实验名称
+model_type: SwinIRModel          # 区分模型类型
+scale: 4                        # 放大倍数（x2/x3/x4 等）
+num_gpu: 1                       # 使用 GPU 数
+manual_seed: 10                  # 随机种子
+
+# =====================================
+# datasets
+# 多个测试集可按需要添加 test_1, test_2, test_3 ...
+# =====================================
+datasets:
+  test_1:  # 第一个测试集
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: testsets/Set5/HR               # Ground Truth (高分辨率) 图像目录
+    dataroot_lq: testsets/Set5/LR_bicubic/X2     # 低分辨率图像目录
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_2:  # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/Set14/HR
+    dataroot_lq: /mnt/e/Test/datasets-test/Set14/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+#
+  test_3:  # the 3rd test dataset
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/BSD100/HRX4
+    dataroot_lq: /mnt/e/Test/datasets-test/BSD100/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_4:  # the 4th test dataset
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_5:  # the 5th test dataset
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+# =====================================
+# network structures
+# 此处与 SwinIR 的训练配置项对应，只保留推理必需的内容
+# =====================================
+network_g:
+  type: SwinIR               # SwinIR 主体
+  upscale: 4                 # 放大倍数，必须与上面 scale 对应
+  in_chans: 3
+  img_size: 64               # 训练/推理时的分块大小，SwinIR 需要
+  window_size: 8             # 窗口大小
+  img_range: 1.0
+  depths: [6, 6, 6, 6]
+  embed_dim: 60
+  num_heads: [6, 6, 6, 6]
+  mlp_ratio: 2
+  upsampler: 'pixelshuffledirect'  # 上采样模块，可根据训练时的配置
+  resi_connection: '1conv'        # 残差连接类型
+
+# =====================================
+# path
+# 预训练模型路径/加载设置
+# =====================================
+path:
+  # 如果没有预训练模型，可以设为 null 或删除
+  pretrain_network_g: /mnt/e/复现实验/SwinIR/SwinIR-main/model_zoo/swinir/002_lightweightSR_DIV2K_s64w8_SwinIR-S_x4.pth
+  strict_load_g: true
+
+# =====================================
+# validation settings
+# 包含保存图像、评价指标等
+# =====================================
+val:
+  save_img: true
+  suffix: ~  # 如果不想给输出图片名加后缀，就保持 None 或 ~
+
+  metrics:
+    psnr:  # 评价指标可自由扩展
+      type: calculate_psnr
+      crop_border: 4           # x2 缩放时，裁剪边界一般设为2。若 x4 则为4。
+      test_y_channel: true     # 只计算 Y 通道
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true

@@ -1,0 +1,103 @@
+# =====================================
+# general settings
+# 使用示例：
+#   python basicsr/test.py -opt options/test/test_AAF_x4.yml
+# =====================================
+name: test_AAF_x4
+model_type: AAFModel     # 与您的训练时 model 名称对应
+scale: 4
+num_gpu: 1
+manual_seed: 10
+
+# =====================================
+# datasets
+# 根据需要设置测试集，这里仅示例添加一个：DIV2K
+# 如果想测试多个，如 Set5、Set14 等，可按同样格式添加 test_2, test_3...
+# =====================================
+datasets:
+  test_1:
+    name: DIV2K
+    type: PairedImageDataset
+    dataroot_gt: /path/to/DIV2K/HR             # Ground Truth (高分辨率) 图像目录
+    dataroot_lq: /path/to/DIV2K/LR_bicubic/X4  # 低分辨率图像目录
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_2: # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/Set14/HR
+    dataroot_lq: /mnt/e/Test/datasets-test/Set14/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+    #
+    test_3: # the 3rd test dataset
+      name: BSD100
+      type: PairedImageDataset
+      dataroot_gt: /mnt/e/Test/datasets-test/BSD100/HRX4
+      dataroot_lq: /mnt/e/Test/datasets-test/BSD100/LRX4
+      filename_tmpl: '{}'
+      io_backend:
+        type: disk
+
+    test_4: # the 4th test dataset
+      name: Urban100
+      type: PairedImageDataset
+      dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+      dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+      filename_tmpl: '{}'
+      io_backend:
+        type: disk
+
+    test_5: # the 5th test dataset
+      name: Manga109
+      type: PairedImageDataset
+      dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+      dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+      filename_tmpl: '{}'
+      io_backend:
+        type: disk
+
+# =====================================
+# network structures
+# 对应您在训练配置中定义 AAF 模型时的一些关键超参数
+# =====================================
+network_g:
+  type: AAF              # 与您训练时的模型名称对应
+  scale: 4
+  n_feats: 32            # 与训练时一致
+  block_feats: 128
+  n_layers: 16
+  use_hsigmoid: false
+  use_ca: true
+  res_scale: 1
+  rgb_range: 255
+  # 如果网络里还需要其他字段，请自行添加
+
+# =====================================
+# path
+# 用于指定预训练模型（测试时需要载入的权重）
+# =====================================
+path:
+  pretrain_network_g: ./model_best.pt  # 改为您的实际路径
+  strict_load_g: true
+
+# =====================================
+# validation settings
+# 是否保存生成图像、评价指标等
+# =====================================
+val:
+  save_img: true
+  suffix: ~  # 若不想给输出图像加后缀，可保留 None 或 ~
+  
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 4        # 对 x4 放大，常用 crop_border=4
+      test_y_channel: true  # 只计算 Y 通道
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true

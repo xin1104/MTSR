@@ -1,0 +1,111 @@
+# =====================================
+# general settings
+# 运行示例：
+#   python basicsr/test.py -opt options/test/test_CARN_x4.yml
+# =====================================
+name: test_CARN_x4
+model_type: CARNModel    # 在您的框架中，用于区分对应的网络逻辑
+scale: 4                 # 放大倍数
+num_gpu: 1               # 测试时使用的 GPU 数
+manual_seed: 10          # 随机种子（如需固定）
+
+# =====================================
+# datasets
+# 可以根据需要配置多个测试集（test_1、test_2、...）。
+# 这里仅演示一个典型结构，替换路径即可。
+# =====================================
+datasets:
+  test_1:
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: /path/to/Set5/HR        # Ground Truth (高分辨率) 图像目录
+    dataroot_lq: /path/to/Set5/LR_bicubic/X4   # 低分辨率图像目录
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+
+  test_2:  # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/Set14/HR
+    dataroot_lq: /mnt/e/Test/datasets-test/Set14/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+#
+  test_3:  # the 3rd test dataset
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/BSD100/HRX4
+    dataroot_lq: /mnt/e/Test/datasets-test/BSD100/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_4:  # the 4th test dataset
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_5:  # the 5th test dataset
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  # 如果要测试更多数据集（Set14、BSD100、Urban100、Manga109 等），
+  # 可按同样格式增添：
+  # test_2:
+  #   name: Set14
+  #   type: PairedImageDataset
+  #   dataroot_gt: /path/to/Set14/HR
+  #   dataroot_lq: /path/to/Set14/LR_bicubic/X4
+  #   filename_tmpl: '{}'
+  #   io_backend:
+  #     type: disk
+
+# =====================================
+# network structures
+# 对应 CARN 的结构超参数，如 group, multi-scale 等
+# =====================================
+network_g:
+  type: CARN           # 与您训练时的网络名称匹配
+  scale: 4             # 推理时的放大倍数，需要和上面 scale 一致
+  # 其余可根据训练脚本中 CARN 的参数配置来补充，比如：
+  # group: 4
+  # multi_scale: false
+  # ... 其他在 train.py 内部定义的超参
+
+# =====================================
+# path
+# 指定预训练模型（测试时需要载入的权重）
+# =====================================
+path:
+  pretrain_network_g: /mnt/e/复现实验/CARN/CARN-pytorch-master/checkpoint/carn.pth   # 改为您的真实权重文件路径
+  strict_load_g: true
+
+# =====================================
+# validation settings
+# 包括保存生成图像、评价指标等
+# =====================================
+val:
+  save_img: true
+  suffix: ~  # 若不想给输出图像加后缀，可留 None 或 ~
+  
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 4        # 对 x4 放大，常用 crop_border=4
+      test_y_channel: true  # 只计算 Y 通道
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true
