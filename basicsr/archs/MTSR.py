@@ -756,7 +756,6 @@ class VSSBlock(nn.Module):
 
     def forward(self, input, x_size):
         B, L, C = input.shape
-        #x_2d = input.view(B, x_size[0], x_size[1], C)
         input = input.view(B, *x_size, C).contiguous()  # [B,H,W,C]
 
         # x_ln1 = self.ln_1(x_2d)
