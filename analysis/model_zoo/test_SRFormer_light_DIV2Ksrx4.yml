@@ -1,0 +1,90 @@
+name: SRFormer_light_X4
+suffix: ~
+model_type: SRModel
+scale: 4
+num_gpu: 1
+manual_seed: 0
+
+datasets:
+  test_1:
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: testsets/Set5/HR
+    dataroot_lq: testsets/Set5/LR_bicubic/X2
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_2:  # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/Set14/HR
+    dataroot_lq: /mnt/e/Test/datasets-test/Set14/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+#
+  test_3:  # the 3rd test dataset
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/BSD100/HRX4
+    dataroot_lq: /mnt/e/Test/datasets-test/BSD100/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_4:  # the 4th test dataset
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_5:  # the 5th test dataset
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+network_g:
+  type: SRFormer
+  upscale: 4
+  in_chans: 3
+  img_size: 64
+  window_size: 16
+  img_range: 1.
+  depths: [6, 6, 6, 6]
+  embed_dim: 60
+  num_heads: [6, 6, 6, 6]
+  mlp_ratio: 2
+  upsampler: 'pixelshuffledirect'
+  resi_connection: '1conv'
+
+
+save_img: false
+print_network: false
+
+# path
+path:
+  pretrain_network_g: /mnt/c/Users/PMX/Downloads/SRFormerLight_SRx4_DIV2K.pth
+  strict_load_g: true
+  param_key_g: params
+
+val:
+  save_img: false
+  suffix: ~
+
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true

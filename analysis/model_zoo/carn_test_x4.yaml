@@ -1,0 +1,74 @@
+name: test_CARN_x4
+model_type: CARNModel
+scale: 4
+num_gpu: 1
+manual_seed: 10
+
+datasets:
+  test_1:
+    name: Set5
+    type: PairedImageDataset
+    dataroot_gt: /path/to/Set5/HR
+    dataroot_lq: /path/to/Set5/LR_bicubic/X4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+
+  test_2:  # the 2nd test dataset
+    name: Set14
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/Set14/HR
+    dataroot_lq: /mnt/e/Test/datasets-test/Set14/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+#
+  test_3:  # the 3rd test dataset
+    name: BSD100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/Test/datasets-test/BSD100/HRX4
+    dataroot_lq: /mnt/e/Test/datasets-test/BSD100/LRX4
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_4:  # the 4th test dataset
+    name: Urban100
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+  test_5:  # the 5th test dataset
+    name: Manga109
+    type: PairedImageDataset
+    dataroot_gt: /mnt/e/PaperDataSet/Urban100/image_SRF_4/HR
+    dataroot_lq: /mnt/e/PaperDataSet/Urban100/image_SRF_4/LR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+network_g:
+  type: CARN
+  scale: 4
+
+path:
+  pretrain_network_g: /mnt/e/复现实验/CARN/CARN-pytorch-master/checkpoint/carn.pth   # 改为您的真实权重文件路径
+  strict_load_g: true
+
+val:
+  save_img: true
+  suffix: ~
+  
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 4
+      test_y_channel: true
