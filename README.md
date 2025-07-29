@@ -1,5 +1,5 @@
 # Lightweight Image Super-Resolution Method Based on Mamba-Transformer Fusion Architecture
-### This repository contains the code and pre-trained models for a paper submitted to The Journal of Supercomputing in April 2025, currently under review. More details will be added upon acceptance.
+
 ![Architecture Overview](assets/MTSR.jpg)
 
 ## Visual Results On MTSR
